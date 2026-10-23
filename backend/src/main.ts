@@ -15,6 +15,9 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());
+  app.enableCors({
+    origin: process.env.FRONTEND_URL?.split(',') ?? 'http://localhost:3001',
+  });
   await app.listen(process.env.PORT ?? 3000);
 }
 void bootstrap();
