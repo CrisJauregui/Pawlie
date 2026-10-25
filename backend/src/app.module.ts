@@ -12,6 +12,7 @@ import { ServicesModule } from './services/services.module';
 import { RequestsModule } from './requests/requests.module';
 import { AvailabilityModule } from './availability/availability.module';
 import { UpdatesModule } from './updates/updates.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UpdatesModule } from './updates/updates.module';
     RequestsModule,
     AvailabilityModule,
     UpdatesModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
