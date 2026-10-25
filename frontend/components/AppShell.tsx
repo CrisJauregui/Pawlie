@@ -1,5 +1,6 @@
 "use client";
 
+import { LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -34,21 +35,25 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-1">
-      <aside className="sticky top-0 hidden h-screen w-60 flex-col gap-8 border-r border-crema-oscuro bg-white p-6 md:flex">
+      <aside className="sticky top-0 hidden h-screen w-72 shrink-0 flex-col gap-8 border-r border-crema-oscuro bg-white p-6 md:flex">
         <Logo />
         <nav className="flex flex-1 flex-col gap-1">
-          {menu.map((item) => (
+          {menu.map(({ href, texto, icono: Icono }) => (
             <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 rounded-xl px-3 py-2 font-semibold ${
-                activo(item.href)
-                  ? "bg-naranja-claro text-naranja-oscuro"
-                  : "hover:bg-crema"
+              key={href}
+              href={href}
+              className={`flex items-center gap-4 rounded-2xl px-4 py-3 font-bold ${
+                activo(href)
+                  ? "bg-activo text-naranja"
+                  : "text-menu hover:bg-crema"
               }`}
             >
-              <span aria-hidden>{item.icono}</span>
-              {item.texto}
+              <Icono
+                size={22}
+                strokeWidth={1.75}
+                className={activo(href) ? "text-naranja" : "text-icono"}
+              />
+              {texto}
             </Link>
           ))}
         </nav>
@@ -57,9 +62,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             cerrarSesion();
             router.replace("/login");
           }}
-          className="rounded-xl px-3 py-2 text-left font-semibold text-tinta-suave hover:bg-crema"
+          className="flex items-center gap-4 rounded-2xl px-4 py-3 text-left font-bold text-menu hover:bg-crema"
         >
-          ↩ Cerrar sesión
+          <LogOut size={22} strokeWidth={1.75} className="text-icono" />
+          Cerrar sesión
         </button>
       </aside>
 
@@ -73,20 +79,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </div>
 
       <nav className="fixed inset-x-0 bottom-0 flex justify-around border-t border-crema-oscuro bg-white py-2 md:hidden">
-        {menu.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex flex-col items-center px-2 text-xs font-semibold ${
-              activo(item.href) ? "text-naranja" : "text-tinta-suave"
-            }`}
-          >
-            <span className="text-xl" aria-hidden>
-              {item.icono}
-            </span>
-            {item.texto}
-          </Link>
-        ))}
+        {menu
+          .filter((item) => item.enMovil.includes(usuario.role))
+          .map(({ href, texto, textoCorto, icono: Icono }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`flex flex-col items-center gap-1 px-2 text-xs font-bold ${
+                activo(href) ? "text-naranja" : "text-menu"
+              }`}
+            >
+              <Icono
+                size={22}
+                strokeWidth={1.75}
+                className={activo(href) ? "text-naranja" : "text-icono"}
+              />
+              {textoCorto ?? texto}
+            </Link>
+          ))}
       </nav>
     </div>
   );

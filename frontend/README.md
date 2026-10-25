@@ -16,7 +16,7 @@ El backend debe estar corriendo en `http://localhost:3000` (ver `docs/autenticac
 | Carpeta | Qué tiene |
 |---|---|
 | `app/` | Pantallas. `app/(app)/` son las pantallas privadas (requieren sesión). |
-| `components/` | Componentes reutilizables: `Logo`, `ui.tsx` (Button, Input, Alerta, Cargando), `AppShell` (menú). |
+| `components/` | Componentes reutilizables (íconos: `lucide-react`): `Logo`, `ui.tsx` (Button, Input, Alerta, Cargando), `AppShell` (menú). |
 | `lib/api.ts` | Función `api()` para llamar al backend con el token. |
 | `lib/navegacion.ts` | Menú y qué rol puede ver cada ruta. |
 | `lib/types.ts` | Tipos de los datos que devuelve la API. |
@@ -32,6 +32,7 @@ El backend debe estar corriendo en `http://localhost:3000` (ver `docs/autenticac
 | `/registro/rol` | Seleccionar rol | Público | Cristina |
 | `/dueno` | Dashboard del dueño | OWNER | Cristina |
 | `/perfil` | Perfil | Ambos | Cristina |
+| `/servicios` | Seguimiento y servicio finalizado | OWNER | Cristina |
 | `/buscar` | Buscar cuidadores y reservar | OWNER | Felipe |
 | `/solicitudes` | Solicitudes | Ambos | Felipe |
 | `/mascotas` | Mis mascotas | OWNER | Ospina |

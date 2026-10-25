@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowLeft, Dog, HeartHandshake, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -10,16 +11,21 @@ import type { RespuestaAuth, Rol } from "@/lib/types";
 import { useRegistro } from "@/store/registro";
 import { rutaInicio, useSesion } from "@/store/sesion";
 
-const OPCIONES: { rol: Rol; emoji: string; titulo: string; texto: string }[] = [
+const OPCIONES: {
+  rol: Rol;
+  icono: LucideIcon;
+  titulo: string;
+  texto: string;
+}[] = [
   {
     rol: "OWNER",
-    emoji: "🐶",
+    icono: Dog,
     titulo: "Soy dueño de mascota",
     texto: "Busco cuidadores de confianza para mis mascotas.",
   },
   {
     rol: "CAREGIVER",
-    emoji: "🧡",
+    icono: HeartHandshake,
     titulo: "Soy cuidador",
     texto: "Quiero ofrecer paseos y cuidado de mascotas.",
   },
@@ -45,19 +51,16 @@ export default function SeleccionarRolPage() {
     setError(null);
     setEnviando(true);
     try {
-      const { accessToken, user } = await api<RespuestaAuth>(
-        "/auth/register",
-        {
-          method: "POST",
-          body: {
-            name: datos.name,
-            email: datos.email,
-            password: datos.password,
-            role: rol,
-            ...(datos.phone ? { phone: datos.phone } : {}),
-          },
+      const { accessToken, user } = await api<RespuestaAuth>("/auth/register", {
+        method: "POST",
+        body: {
+          name: datos.name,
+          email: datos.email,
+          password: datos.password,
+          role: rol,
+          ...(datos.phone ? { phone: datos.phone } : {}),
         },
-      );
+      });
       iniciarSesion(accessToken, user);
       limpiar();
       router.replace(rutaInicio(user));
@@ -85,8 +88,14 @@ export default function SeleccionarRolPage() {
                 : "border-crema-oscuro hover:border-lila"
             }`}
           >
-            <span className="text-4xl" aria-hidden>
-              {opcion.emoji}
+            <span
+              className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${
+                rol === opcion.rol
+                  ? "bg-white text-naranja"
+                  : "bg-crema text-icono"
+              }`}
+            >
+              <opcion.icono size={28} strokeWidth={1.75} />
             </span>
             <span>
               <span className="block font-extrabold">{opcion.titulo}</span>
@@ -99,9 +108,9 @@ export default function SeleccionarRolPage() {
         </Button>
         <Link
           href="/registro"
-          className="text-center text-sm font-bold text-tinta-suave"
+          className="flex items-center justify-center gap-1 text-sm font-bold text-tinta-suave"
         >
-          ← Volver
+          <ArrowLeft size={16} /> Volver
         </Link>
       </div>
     </AuthCard>

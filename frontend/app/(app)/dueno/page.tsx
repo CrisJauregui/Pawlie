@@ -1,5 +1,13 @@
 "use client";
 
+import {
+  Cat,
+  Dog,
+  PawPrint,
+  Plus,
+  Search,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Alerta, Cargando } from "@/components/ui";
@@ -12,9 +20,9 @@ type EstadoMascotas =
   | { tipo: "error"; mensaje: string }
   | { tipo: "listo"; mascotas: Mascota[] };
 
-const EMOJI_ESPECIE: Record<string, string> = {
-  perro: "🐶",
-  gato: "🐱",
+const ICONO_ESPECIE: Record<string, LucideIcon> = {
+  perro: Dog,
+  gato: Cat,
 };
 
 // Dashboard del dueño.
@@ -42,29 +50,37 @@ export default function DashboardDuenoPage() {
   return (
     <div className="flex flex-col gap-8">
       <section>
-        <h1 className="text-3xl font-extrabold">¡Hola, {primerNombre}! 👋</h1>
+        <h1 className="text-3xl font-extrabold">¡Hola, {primerNombre}!</h1>
         <p className="text-tinta-suave">¿Qué necesita tu mascota hoy?</p>
       </section>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Resumen titulo="Mascotas registradas" valor={totalMascotas} color="bg-naranja-claro" />
+        <Resumen
+          titulo="Mascotas registradas"
+          valor={totalMascotas}
+          color="bg-naranja-claro"
+        />
         {/* Se conectan cuando esté el módulo de solicitudes (Felipe). */}
         <Resumen titulo="Solicitudes activas" valor="–" color="bg-lila-claro" />
-        <Resumen titulo="Servicios realizados" valor="–" color="bg-verde-claro" />
+        <Resumen
+          titulo="Servicios realizados"
+          valor="–"
+          color="bg-verde-claro"
+        />
       </section>
 
       <section className="flex flex-col gap-3 sm:flex-row">
         <Link
           href="/buscar"
-          className="rounded-full bg-naranja px-6 py-3 text-center font-bold text-white hover:bg-naranja-oscuro"
+          className="flex items-center justify-center gap-2 rounded-full bg-naranja px-6 py-3 font-bold text-white hover:bg-naranja-oscuro"
         >
-          🔎 Buscar cuidadores
+          <Search size={20} /> Buscar cuidadores
         </Link>
         <Link
           href="/mascotas"
-          className="rounded-full border-2 border-naranja px-6 py-3 text-center font-bold text-naranja hover:bg-naranja-claro"
+          className="flex items-center justify-center gap-2 rounded-full border-2 border-naranja px-6 py-3 font-bold text-naranja hover:bg-naranja-claro"
         >
-          ➕ Agregar mascota
+          <Plus size={20} /> Agregar mascota
         </Link>
       </section>
 
@@ -82,21 +98,30 @@ export default function DashboardDuenoPage() {
         )}
         {estado.tipo === "listo" && estado.mascotas.length > 0 && (
           <ul className="grid gap-3 sm:grid-cols-2">
-            {estado.mascotas.map((m) => (
-              <li key={m.id} className="flex items-center gap-4 rounded-2xl bg-white p-4">
-                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-crema-oscuro text-3xl">
-                  {EMOJI_ESPECIE[m.species.toLowerCase()] ?? "🐾"}
-                </span>
-                <div>
-                  <p className="font-extrabold">{m.name}</p>
-                  <p className="text-sm text-tinta-suave">
-                    {[m.breed ?? m.species, m.age !== null ? `${m.age} años` : null]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                </div>
-              </li>
-            ))}
+            {estado.mascotas.map((m) => {
+              const Icono = ICONO_ESPECIE[m.species.toLowerCase()] ?? PawPrint;
+              return (
+                <li
+                  key={m.id}
+                  className="flex items-center gap-4 rounded-2xl bg-white p-4"
+                >
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-naranja-claro text-naranja">
+                    <Icono size={28} strokeWidth={1.75} />
+                  </span>
+                  <div>
+                    <p className="font-extrabold">{m.name}</p>
+                    <p className="text-sm text-tinta-suave">
+                      {[
+                        m.breed ?? m.species,
+                        m.age !== null ? `${m.age} años` : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>

@@ -1,21 +1,22 @@
+import { Camera, CalendarCheck, PawPrint, Search } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 
 const PASOS = [
   {
-    emoji: "🔎",
+    icono: Search,
     titulo: "Busca un cuidador",
     texto: "Filtra por servicio, fecha y ciudad.",
     color: "bg-lila-claro",
   },
   {
-    emoji: "📅",
+    icono: CalendarCheck,
     titulo: "Reserva en minutos",
     texto: "Elige tu mascota, el servicio y el horario.",
     color: "bg-naranja-claro",
   },
   {
-    emoji: "📸",
+    icono: Camera,
     titulo: "Sigue el servicio",
     texto: "Recibe fotos y notas mientras cuidan a tu mascota.",
     color: "bg-verde-claro",
@@ -29,7 +30,10 @@ export default function Home() {
       <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-5">
         <Logo />
         <nav className="flex items-center gap-2 text-sm font-bold">
-          <Link href="/login" className="rounded-full px-4 py-2 hover:bg-crema-oscuro">
+          <Link
+            href="/login"
+            className="rounded-full px-4 py-2 hover:bg-crema-oscuro"
+          >
             Iniciar sesión
           </Link>
           <Link
@@ -43,8 +47,8 @@ export default function Home() {
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-14 px-4 py-10">
         <section className="flex flex-col items-center gap-6 text-center">
-          <span className="text-6xl" aria-hidden>
-            🐾
+          <span className="flex h-20 w-20 items-center justify-center rounded-full bg-naranja-claro text-naranja">
+            <PawPrint size={40} strokeWidth={1.75} />
           </span>
           <h1 className="max-w-2xl text-4xl font-extrabold leading-tight sm:text-5xl">
             Cuidadores de confianza para quien más quieres
@@ -70,10 +74,13 @@ export default function Home() {
         </section>
 
         <section className="grid gap-4 sm:grid-cols-3">
-          {PASOS.map((paso) => (
-            <article key={paso.titulo} className={`rounded-3xl p-6 ${paso.color}`}>
-              <span className="text-4xl" aria-hidden>
-                {paso.emoji}
+          {PASOS.map(({ icono: Icono, ...paso }) => (
+            <article
+              key={paso.titulo}
+              className={`rounded-3xl p-6 ${paso.color}`}
+            >
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-naranja">
+                <Icono size={24} strokeWidth={1.75} />
               </span>
               <h2 className="mt-3 text-lg font-extrabold">{paso.titulo}</h2>
               <p className="text-tinta-suave">{paso.texto}</p>

@@ -14,6 +14,9 @@
   --color-tinta: #3b2a25;
   --color-tinta-suave: #7a6a63;
   --color-error: #c8432f;
+  --color-menu: #8b7a6f;
+  --color-icono: #c3b3a6;
+  --color-activo: #fdf0e4;
 
   --font-sans: var(--font-nunito);
   --font-logo: var(--font-pacifico);

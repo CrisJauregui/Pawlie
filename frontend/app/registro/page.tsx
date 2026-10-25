@@ -19,7 +19,8 @@ function validar(datos: DatosRegistro, confirmar: string): Errores {
   if (datos.password.length < 8) {
     errores.password = "La contraseña debe tener al menos 8 caracteres";
   } else if (!/(?=.*[A-Za-z])(?=.*\d)/.test(datos.password)) {
-    errores.password = "La contraseña debe tener al menos una letra y un número";
+    errores.password =
+      "La contraseña debe tener al menos una letra y un número";
   }
   if (confirmar !== datos.password) {
     errores.confirmar = "Las contraseñas no coinciden";

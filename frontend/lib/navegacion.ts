@@ -1,36 +1,84 @@
+import {
+  Calendar,
+  FileText,
+  House,
+  PawPrint,
+  Search,
+  User,
+  type LucideIcon,
+} from "lucide-react";
 import type { Rol } from "./types";
 
 export interface ItemMenu {
   href: string;
   texto: string;
-  icono: string;
+  textoCorto?: string; // para la barra del celular
+  icono: LucideIcon;
   roles: Rol[];
+  // Roles que la ven también en la barra inferior del celular (caben máximo 5).
+  enMovil: Rol[];
 }
 
-// Menú de la app (barra lateral en escritorio, barra inferior en celular).
+// Menú de la app (barra lateral en escritorio, barra inferior en celular),
+// en el mismo orden del prototipo de Figma.
 // Para agregar una pantalla al menú, agréguenla aquí con los roles que la ven.
 export const MENU: ItemMenu[] = [
-  { href: "/dueno", texto: "Inicio", icono: "🏠", roles: ["OWNER"] },
-  { href: "/cuidador", texto: "Inicio", icono: "🏠", roles: ["CAREGIVER"] },
-  { href: "/buscar", texto: "Buscar", icono: "🔎", roles: ["OWNER"] },
+  {
+    href: "/dueno",
+    texto: "Inicio",
+    icono: House,
+    roles: ["OWNER"],
+    enMovil: ["OWNER"],
+  },
+  {
+    href: "/cuidador",
+    texto: "Inicio",
+    icono: House,
+    roles: ["CAREGIVER"],
+    enMovil: ["CAREGIVER"],
+  },
+  {
+    href: "/mascotas",
+    texto: "Mis mascotas",
+    icono: PawPrint,
+    roles: ["OWNER"],
+    enMovil: ["OWNER"],
+  },
+  {
+    href: "/buscar",
+    texto: "Buscar cuidadores",
+    textoCorto: "Buscar",
+    icono: Search,
+    roles: ["OWNER"],
+    enMovil: ["OWNER"],
+  },
   {
     href: "/solicitudes",
     texto: "Solicitudes",
-    icono: "📋",
+    icono: FileText,
     roles: ["OWNER", "CAREGIVER"],
+    enMovil: ["CAREGIVER"],
   },
-  { href: "/mascotas", texto: "Mis mascotas", icono: "🐾", roles: ["OWNER"] },
+  {
+    href: "/servicios",
+    texto: "Servicios",
+    icono: Calendar,
+    roles: ["OWNER"],
+    enMovil: ["OWNER"],
+  },
   {
     href: "/disponibilidad",
     texto: "Disponibilidad",
-    icono: "📅",
+    icono: Calendar,
     roles: ["CAREGIVER"],
+    enMovil: ["CAREGIVER"],
   },
   {
     href: "/perfil",
     texto: "Perfil",
-    icono: "👤",
+    icono: User,
     roles: ["OWNER", "CAREGIVER"],
+    enMovil: ["OWNER", "CAREGIVER"],
   },
 ];
 
