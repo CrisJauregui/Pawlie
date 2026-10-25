@@ -24,10 +24,7 @@ export class UpdatesController {
   constructor(private readonly updatesService: UpdatesService) {}
 
   @Patch(':id/start')
-  start(
-    @CurrentUser() user: AuthUser,
-    @Param('id', ParseUUIDPipe) id: string,
-  ) {
+  start(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.updatesService.start(user.id, id);
   }
 

@@ -29,7 +29,10 @@ export class PetsController {
   constructor(private readonly petsService: PetsService) {}
 
   @Post()
-  create(@CurrentUser() user: AuthUser, @Body() dto: CreatePetDto): Promise<Pet> {
+  create(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: CreatePetDto,
+  ): Promise<Pet> {
     return this.petsService.create(user.id, dto);
   }
 

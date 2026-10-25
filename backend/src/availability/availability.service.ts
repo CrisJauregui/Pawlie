@@ -20,7 +20,10 @@ export class AvailabilityService {
     private readonly profilesRepository: Repository<CaregiverProfile>,
   ) {}
 
-  async create(userId: string, dto: CreateAvailabilityDto): Promise<Availability> {
+  async create(
+    userId: string,
+    dto: CreateAvailabilityDto,
+  ): Promise<Availability> {
     const profile = await this.getProfile(userId);
     await this.assertNoOverlap(
       profile.id,
@@ -71,9 +74,7 @@ export class AvailabilityService {
       user: { id: userId },
     });
     if (!profile) {
-      throw new NotFoundException(
-        'Primero debes crear tu perfil de cuidador',
-      );
+      throw new NotFoundException('Primero debes crear tu perfil de cuidador');
     }
     return profile;
   }
