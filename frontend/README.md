@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pawlie · Frontend (Next.js)
 
-## Getting Started
-
-First, run the development server:
+## Cómo correrlo
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd frontend
+cp .env.example .env.local   # URL del backend
+npm install
+npm run dev                  # http://localhost:3001
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+El backend debe estar corriendo en `http://localhost:3000` (ver `docs/autenticacion.md`).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Estructura
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Carpeta | Qué tiene |
+|---|---|
+| `app/` | Pantallas. `app/(app)/` son las pantallas privadas (requieren sesión). |
+| `components/` | Componentes reutilizables (íconos: `lucide-react`): `Logo`, `ui.tsx` (Button, Input, Alerta, Cargando), `AppShell` (menú). |
+| `lib/api.ts` | Función `api()` para llamar al backend con el token. |
+| `lib/navegacion.ts` | Menú y qué rol puede ver cada ruta. |
+| `lib/types.ts` | Tipos de los datos que devuelve la API. |
+| `store/` | Estado global con Zustand: `sesion.ts` (usuario y token), `registro.ts`. |
 
-## Learn More
+## Rutas
 
-To learn more about Next.js, take a look at the following resources:
+| Ruta | Pantalla | Rol | Responsable |
+|---|---|---|---|
+| `/` | Bienvenida | Público | Cristina |
+| `/login` | Iniciar sesión | Público | Cristina |
+| `/registro` | Crear cuenta | Público | Cristina |
+| `/registro/rol` | Seleccionar rol | Público | Cristina |
+| `/dueno` | Dashboard del dueño | OWNER | Cristina |
+| `/perfil` | Perfil | Ambos | Cristina |
+| `/servicios` | Mis servicios: estado, seguimiento y finalizado (`/servicios/[id]`) | OWNER | Cristina |
+| `/buscar` | Buscar cuidadores y reservar | OWNER | Felipe |
+| `/solicitudes` | Solicitudes | Ambos | Felipe |
+| `/mascotas` | Mis mascotas | OWNER | Ospina |
+| `/cuidador` | Dashboard del cuidador | CAREGIVER | Ospina |
+| `/disponibilidad` | Calendario (disponibilidad) | CAREGIVER | Ospina |
+| `/mis-servicios` | Servicios y precios del cuidador | CAREGIVER | Felipe |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Cómo hacer una pantalla nueva
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Crear el archivo en `app/(app)/<ruta>/page.tsx` (así queda protegida y con el menú).
+2. Si va en el menú o la ve un solo rol, agregarla en `lib/navegacion.ts`.
+3. Llamar al backend con `api()`; el token se envía solo:
 
-## Deploy on Vercel
+```tsx
+"use client";
+import { useEffect, useState } from "react";
+import { api, ApiError } from "@/lib/api";
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+export default function MisMascotasPage() {
+  const [mascotas, setMascotas] = useState<Mascota[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+  useEffect(() => {
+    api<Mascota[]>("/pets")
+      .then(setMascotas)
+      .catch((e) => setError(e instanceof ApiError ? e.message : "Error"));
+  }, []);
+  // ...
+}
+```
+
+4. Para saber quién inició sesión: `const usuario = useSesion((s) => s.usuario);`
+5. Usar los colores de la marca de `app/globals.css` (`bg-naranja`, `bg-crema`, `bg-lila-claro`, `text-tinta-suave`, …) y los componentes de `components/ui.tsx`.
+
+## Sesión y token
+
+- Al iniciar sesión, el token y el usuario se guardan en el store de Zustand (`store/sesion.ts`), que los persiste en `localStorage` para no perder la sesión al recargar.
+- `api()` agrega el header `Authorization: Bearer <token>` en cada petición.
+- Si el backend responde **401** (token vencido o inválido), la sesión se cierra y `AppShell` manda al login.
+- El frontend solo oculta pantallas según el rol; **la seguridad real está en el backend** (`JwtAuthGuard` y `RolesGuard`).

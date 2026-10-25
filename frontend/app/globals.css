@@ -1,26 +1,31 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Identidad visual de Pawlie (según el prototipo de Figma). */
+@theme {
+  --color-crema: #faf5ee;
+  --color-crema-oscuro: #f6ead9;
+  --color-naranja: #f47e2e;
+  --color-naranja-oscuro: #d96c22;
+  --color-naranja-claro: #fde3cf;
+  --color-lila: #8b6fd1;
+  --color-lila-claro: #efe9fa;
+  --color-verde: #5f9e6e;
+  --color-verde-claro: #e6f1e4;
+  --color-tinta: #3b2a25;
+  --color-tinta-suave: #7a6a63;
+  --color-error: #c8432f;
+  --color-menu: #8b7a6f;
+  --color-icono: #c3b3a6;
+  --color-activo: #fdf0e4;
+  /* Frases decorativas escritas a mano (reemplaza la cursiva morada del Figma). */
+  --color-terracota: #c8643a;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-nunito);
+  --font-logo: var(--font-pacifico);
+  --font-mano: var(--font-caveat);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-crema);
+  color: var(--color-tinta);
 }
