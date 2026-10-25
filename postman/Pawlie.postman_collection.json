@@ -125,6 +125,226 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Seguimiento y reseñas",
+      "item": [
+        {
+          "name": "Iniciar sesión como dueña",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login correcto\", () => pm.response.to.have.status(200));\npm.collectionVariables.set(\"token\", pm.response.json().accessToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"maria@pawlie.com\",\n  \"password\": \"Pawlie123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Resumen del dueño",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));\nconst solicitudes = pm.response.json().requests;\nconst enCurso = solicitudes.find(s => s.status === \"EN_CURSO\");\nconst finalizada = solicitudes.find(s => s.status === \"FINALIZADA\" && s.pet.name === \"Max\");\npm.collectionVariables.set(\"solicitudEnCurso\", enCurso.id);\npm.collectionVariables.set(\"solicitudFinalizada\", finalizada.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/owner/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "owner",
+                "summary"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ver seguimiento",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));\npm.test(\"Trae las actualizaciones del cuidador\", () =>\n  pm.expect(pm.response.json().updates.length).to.be.above(0));\n  "
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{solicitudEnCurso}}/tracking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{solicitudEnCurso}}",
+                "tracking"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Calificar servicio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Reseña creada\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Max volvió feliz\",\n  \"tags\": [\"Muy puntual\", \"Regresó feliz\"]\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{solicitudFinalizada}}/review",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{solicitudFinalizada}}",
+                "review"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Calificar dos veces (error)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"No permite calificar dos veces\", () => pm.response.to.have.status(409));\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{solicitudFinalizada}}/review",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{solicitudFinalizada}}",
+                "review"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "variable": [
@@ -134,6 +354,14 @@
     },
     {
       "key": "token",
+      "value": ""
+    },
+    {
+      "key": "solicitudEnCurso",
+      "value": ""
+    },
+    {
+      "key": "solicitudFinalizada",
       "value": ""
     }
   ]
