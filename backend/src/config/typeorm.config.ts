@@ -13,6 +13,7 @@ export const buildTypeOrmOptions = (
   username: env.POSTGRES_USER,
   password: env.POSTGRES_PASSWORD,
   database: env.POSTGRES_DB,
+  ssl: env.DB_SSL === 'true',
   synchronize: false,
   entities: [join(__dirname, '..', '**', '*.entity.{ts,js}')],
   migrations: [join(__dirname, '..', 'database', 'migrations', '*.{ts,js}')],
