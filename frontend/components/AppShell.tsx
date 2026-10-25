@@ -1,11 +1,12 @@
 "use client";
 
 import { LogOut } from "lucide-react";
+import { iniciales } from "@/lib/formato";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Logo } from "./Logo";
-import { Cargando } from "./ui";
+import { Cargando, Frase } from "./ui";
 import { menuPara, puedeEntrar } from "@/lib/navegacion";
 import { rutaInicio, useSesion, useSesionCargada } from "@/store/sesion";
 
@@ -67,13 +68,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <LogOut size={22} strokeWidth={1.75} className="text-icono" />
           Cerrar sesión
         </button>
+        <Frase className="text-xl leading-tight">
+          Juntos hacemos un mundo más feliz
+        </Frase>
       </aside>
 
       <div className="flex flex-1 flex-col pb-20 md:pb-0">
-        <header className="flex items-center justify-between border-b border-crema-oscuro bg-white px-4 py-3 md:hidden">
-          <Logo />
+        <header className="flex items-center justify-between border-b border-crema-oscuro bg-white px-4 py-3 md:justify-end md:px-8">
+          <span className="md:hidden">
+            <Logo />
+          </span>
+          <Link href="/perfil" className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-naranja bg-naranja-claro text-sm font-extrabold text-naranja-oscuro">
+              {iniciales(usuario.name)}
+            </span>
+            <span className="hidden text-sm sm:block">
+              <span className="block font-bold">{usuario.name}</span>
+              <span className="text-xs text-tinta-suave">
+                {usuario.role === "OWNER" ? "Dueño de mascota" : "Cuidador"}
+              </span>
+            </span>
+          </Link>
         </header>
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 md:px-8">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 md:px-8">
           {children}
         </main>
       </div>

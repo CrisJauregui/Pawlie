@@ -32,12 +32,13 @@ El backend debe estar corriendo en `http://localhost:3000` (ver `docs/autenticac
 | `/registro/rol` | Seleccionar rol | Público | Cristina |
 | `/dueno` | Dashboard del dueño | OWNER | Cristina |
 | `/perfil` | Perfil | Ambos | Cristina |
-| `/servicios` | Seguimiento y servicio finalizado | OWNER | Cristina |
+| `/servicios` | Mis servicios: estado, seguimiento y finalizado (`/servicios/[id]`) | OWNER | Cristina |
 | `/buscar` | Buscar cuidadores y reservar | OWNER | Felipe |
 | `/solicitudes` | Solicitudes | Ambos | Felipe |
 | `/mascotas` | Mis mascotas | OWNER | Ospina |
 | `/cuidador` | Dashboard del cuidador | CAREGIVER | Ospina |
-| `/disponibilidad` | Disponibilidad | CAREGIVER | Ospina |
+| `/disponibilidad` | Calendario (disponibilidad) | CAREGIVER | Ospina |
+| `/mis-servicios` | Servicios y precios del cuidador | CAREGIVER | Felipe |
 
 ## Cómo hacer una pantalla nueva
 

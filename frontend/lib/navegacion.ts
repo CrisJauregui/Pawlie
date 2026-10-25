@@ -1,5 +1,6 @@
 import {
   Calendar,
+  CalendarCheck,
   FileText,
   House,
   PawPrint,
@@ -67,8 +68,15 @@ export const MENU: ItemMenu[] = [
     enMovil: ["OWNER"],
   },
   {
+    href: "/mis-servicios",
+    texto: "Mis servicios",
+    icono: CalendarCheck,
+    roles: ["CAREGIVER"],
+    enMovil: [],
+  },
+  {
     href: "/disponibilidad",
-    texto: "Disponibilidad",
+    texto: "Calendario",
     icono: Calendar,
     roles: ["CAREGIVER"],
     enMovil: ["CAREGIVER"],
