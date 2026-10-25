@@ -14,3 +14,12 @@ export interface RespuestaAuth {
   accessToken: string;
   user: Usuario;
 }
+
+export interface Mascota {
+  id: string;
+  name: string;
+  species: string;
+  breed: string | null;
+  age: number | null;
+  notes: string | null;
+}
