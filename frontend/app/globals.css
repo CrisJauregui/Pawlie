@@ -2,24 +2,27 @@
 
 /* Identidad visual de Pawlie (según el prototipo de Figma). */
 @theme {
-  --color-crema: #fff8ef;
+  --color-crema: #faf5ee;
   --color-crema-oscuro: #f6ead9;
-  --color-naranja: #f2853a;
+  --color-naranja: #f47e2e;
   --color-naranja-oscuro: #d96c22;
   --color-naranja-claro: #fde3cf;
-  --color-lila: #b9a4ec;
-  --color-lila-claro: #ece5fb;
-  --color-verde: #6dbf8b;
-  --color-verde-claro: #dcf2e3;
+  --color-lila: #8b6fd1;
+  --color-lila-claro: #efe9fa;
+  --color-verde: #5f9e6e;
+  --color-verde-claro: #e6f1e4;
   --color-tinta: #3b2a25;
   --color-tinta-suave: #7a6a63;
   --color-error: #c8432f;
   --color-menu: #8b7a6f;
   --color-icono: #c3b3a6;
   --color-activo: #fdf0e4;
+  /* Frases decorativas escritas a mano (reemplaza la cursiva morada del Figma). */
+  --color-terracota: #c8643a;
 
   --font-sans: var(--font-nunito);
   --font-logo: var(--font-pacifico);
+  --font-mano: var(--font-caveat);
 }
 
 body {
