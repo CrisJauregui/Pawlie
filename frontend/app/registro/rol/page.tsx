@@ -73,7 +73,12 @@ export default function SeleccionarRolPage() {
   }
 
   return (
-    <AuthCard titulo="¿Cómo usarás Pawlie?" subtitulo="Elige tu rol">
+    <AuthCard
+      titulo="¿Cómo usarás Pawlie?"
+      subtitulo="Elige tu rol para personalizar tu experiencia"
+      foto="/fotos/conejo.jpg"
+      frase="Cada patita cuenta"
+    >
       <div className="flex flex-col gap-4">
         {error && <Alerta>{error}</Alerta>}
         {OPCIONES.map((opcion) => (
@@ -82,10 +87,10 @@ export default function SeleccionarRolPage() {
             type="button"
             onClick={() => setRol(opcion.rol)}
             aria-pressed={rol === opcion.rol}
-            className={`flex items-center gap-4 rounded-2xl border-2 p-4 text-left transition-colors ${
+            className={`flex items-center gap-4 rounded-3xl border-2 p-5 text-left transition-colors ${
               rol === opcion.rol
                 ? "border-naranja bg-naranja-claro"
-                : "border-crema-oscuro hover:border-lila"
+                : "border-crema-oscuro bg-white hover:border-naranja/50"
             }`}
           >
             <span

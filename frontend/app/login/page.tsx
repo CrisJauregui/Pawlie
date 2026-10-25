@@ -1,5 +1,6 @@
 "use client";
 
+import { Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
@@ -37,13 +38,20 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthCard titulo="Iniciar sesión" subtitulo="¡Qué bueno verte de nuevo!">
-      <form onSubmit={enviar} className="flex flex-col gap-4">
+    <AuthCard
+      titulo="¡Hola de nuevo!"
+      subtitulo="Inicia sesión para continuar"
+      foto="/fotos/perro.jpg"
+      frase="Buenas huellas comienzan aquí"
+    >
+      <form onSubmit={enviar} className="flex flex-col gap-5">
         {error && <Alerta>{error}</Alerta>}
         <Input
           id="email"
           label="Correo electrónico"
           type="email"
+          icono={Mail}
+          placeholder="hola@ejemplo.com"
           autoComplete="email"
           required
           value={email}
@@ -53,6 +61,8 @@ export default function LoginPage() {
           id="password"
           label="Contraseña"
           type="password"
+          icono={Lock}
+          placeholder="Tu contraseña"
           autoComplete="current-password"
           required
           value={password}
@@ -62,7 +72,7 @@ export default function LoginPage() {
           {enviando ? "Entrando…" : "Iniciar sesión"}
         </Button>
       </form>
-      <p className="mt-6 text-center text-sm text-tinta-suave">
+      <p className="mt-8 text-center text-sm text-tinta-suave">
         ¿No tienes cuenta?{" "}
         <Link href="/registro" className="font-bold text-naranja">
           Crear cuenta

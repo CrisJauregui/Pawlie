@@ -1,5 +1,6 @@
 "use client";
 
+import { Lock, Mail, Phone, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
@@ -51,10 +52,17 @@ export default function RegistroPage() {
   }
 
   return (
-    <AuthCard titulo="Crear cuenta" subtitulo="Únete a la comunidad Pawlie">
+    <AuthCard
+      titulo="Crea tu cuenta"
+      subtitulo="Únete a nuestra comunidad"
+      foto="/fotos/gato.jpg"
+      frase="Mis amigos, mis aventuras"
+    >
       <form onSubmit={continuar} className="flex flex-col gap-4" noValidate>
         <Input
           id="name"
+          icono={User}
+          placeholder="Tu nombre"
           label="Nombre completo"
           autoComplete="name"
           value={datos.name}
@@ -63,6 +71,8 @@ export default function RegistroPage() {
         />
         <Input
           id="email"
+          icono={Mail}
+          placeholder="hola@ejemplo.com"
           label="Correo electrónico"
           type="email"
           autoComplete="email"
@@ -72,6 +82,8 @@ export default function RegistroPage() {
         />
         <Input
           id="phone"
+          icono={Phone}
+          placeholder="300 123 4567"
           label="Teléfono (opcional)"
           type="tel"
           autoComplete="tel"
@@ -80,6 +92,8 @@ export default function RegistroPage() {
         />
         <Input
           id="password"
+          icono={Lock}
+          placeholder="Mínimo 8 caracteres"
           label="Contraseña"
           type="password"
           autoComplete="new-password"
@@ -89,6 +103,8 @@ export default function RegistroPage() {
         />
         <Input
           id="confirmar"
+          icono={Lock}
+          placeholder="Repite tu contraseña"
           label="Confirmar contraseña"
           type="password"
           autoComplete="new-password"
@@ -98,7 +114,7 @@ export default function RegistroPage() {
         />
         <Button type="submit">Continuar</Button>
       </form>
-      <p className="mt-6 text-center text-sm text-tinta-suave">
+      <p className="mt-8 text-center text-sm text-tinta-suave">
         ¿Ya tienes cuenta?{" "}
         <Link href="/login" className="font-bold text-naranja">
           Iniciar sesión
