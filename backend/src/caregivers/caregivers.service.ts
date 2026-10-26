@@ -154,7 +154,7 @@ export class CaregiversService {
   private async ratings(
     caregiverIds: string[],
   ): Promise<Map<string, { average: number; count: number }>> {
-    const rows = (await this.reviewsRepository.query(
+    const rows = (await this.reviewsRepository.query<RatingRow[]>(
       `SELECT q.caregiver_id AS caregiver_id,
               AVG(r.rating) AS average,
               COUNT(r.id) AS count
@@ -163,7 +163,7 @@ export class CaregiversService {
        WHERE q.caregiver_id = ANY($1::uuid[])
        GROUP BY q.caregiver_id`,
       [caregiverIds],
-    )) as RatingRow[];
+    ));
 
     return new Map(
       rows.map((row) => [
