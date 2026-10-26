@@ -75,3 +75,68 @@ export interface Seguimiento extends ResumenSolicitud {
   }[];
   review: Resena | null;
 }
+
+// ---- Buscar cuidadores y reservar (GET /caregivers, /services, /requests) ----
+
+export interface ServicioCuidador {
+  id: string;
+  name: string;
+  type: TipoServicio;
+  price: number;
+  durationMinutes: number;
+}
+
+// Respuesta de GET /caregivers (lista).
+export interface Cuidador {
+  id: string;
+  name: string;
+  city: string;
+  bio: string | null;
+  yearsExperience: number;
+  photoUrl: string | null;
+  rating: { average: number | null; count: number };
+  services: ServicioCuidador[];
+}
+
+export interface FranjaDisponible {
+  id: string;
+  dayOfWeek: number; // 0 = domingo ... 6 = sábado
+  startTime: string; // "HH:MM"
+  endTime: string; // "HH:MM"
+}
+
+// Respuesta de GET /caregivers/:id.
+export interface CuidadorDetalle extends Cuidador {
+  availability: FranjaDisponible[];
+}
+
+// Respuesta de GET /services (los servicios del cuidador con sesión).
+// El precio llega como texto desde la base de datos ("35000.00").
+export interface Servicio {
+  id: string;
+  name: string;
+  type: TipoServicio;
+  price: string;
+  durationMinutes: number;
+  isActive: boolean;
+}
+
+// Respuesta de POST /requests, GET /requests/me y GET /requests/:id.
+export interface Solicitud {
+  id: string;
+  status: EstadoSolicitud;
+  startAt: string;
+  endAt: string;
+  totalPrice: number;
+  notes: string | null;
+  createdAt: string;
+  service: {
+    id: string;
+    name: string;
+    type: TipoServicio;
+    durationMinutes: number;
+  };
+  pet: { id: string; name: string; species: string; breed: string | null };
+  caregiver: { id: string; name: string; city: string };
+  owner: { id: string; name: string };
+}
