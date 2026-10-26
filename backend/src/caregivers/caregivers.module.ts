@@ -8,13 +8,7 @@ import { CaregiversController } from './caregivers.controller';
 import { CaregiversService } from './caregivers.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      CaregiverProfile,
-      Service,
-      Availability,
-      Review,
-    ]),
+  imports: [ TypeOrmModule.forFeature([CaregiverProfile, Service, Availability, Review]),
   ],
   controllers: [CaregiversController],
   providers: [CaregiversService],
