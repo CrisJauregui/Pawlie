@@ -10,9 +10,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { Alerta, Cargando, Frase } from "@/components/ui";
-import { api, ApiError } from "@/lib/api";
+import { useApi } from "@/hooks/useApi";
 import { formatoFechaCorta, formatoHora } from "@/lib/formato";
 import { FotoMascota } from "@/components/FotoMascota";
 import { edadMascota } from "@/lib/mascotas";
@@ -20,31 +19,18 @@ import { ESTADOS_ACTIVOS } from "@/lib/solicitudes";
 import type { Mascota, ResumenDueno, ResumenSolicitud } from "@/lib/types";
 import { useSesion } from "@/store/sesion";
 
-type Estado =
-  | { tipo: "cargando" }
-  | { tipo: "error"; mensaje: string }
-  | { tipo: "listo"; mascotas: Mascota[]; resumen: ResumenDueno };
-
 // Dashboard del dueño (pantalla 5).
 export default function DashboardDuenoPage() {
   const usuario = useSesion((s) => s.usuario);
-  const [estado, setEstado] = useState<Estado>({ tipo: "cargando" });
-
-  useEffect(() => {
-    Promise.all([api<Mascota[]>("/pets"), api<ResumenDueno>("/owner/summary")])
-      .then(([mascotas, resumen]) =>
-        setEstado({ tipo: "listo", mascotas, resumen }),
-      )
-      .catch((err: unknown) =>
-        setEstado({
-          tipo: "error",
-          mensaje:
-            err instanceof ApiError
-              ? err.message
-              : "No se pudo cargar tu información",
-        }),
-      );
-  }, []);
+  const mascotas = useApi<Mascota[]>(
+    "/pets",
+    "No se pudo cargar tu información",
+  );
+  const resumen = useApi<ResumenDueno>(
+    "/owner/summary",
+    "No se pudo cargar tu información",
+  );
+  const error = mascotas.error ?? resumen.error;
 
   const primerNombre = usuario?.name.split(" ")[0] ?? "";
 
@@ -62,10 +48,10 @@ export default function DashboardDuenoPage() {
         <Frase>Amor en cada pata</Frase>
       </section>
 
-      {estado.tipo === "cargando" && <Cargando />}
-      {estado.tipo === "error" && <Alerta>{estado.mensaje}</Alerta>}
-      {estado.tipo === "listo" && (
-        <Contenido mascotas={estado.mascotas} resumen={estado.resumen} />
+      {error && <Alerta>{error}</Alerta>}
+      {!error && (mascotas.cargando || resumen.cargando) && <Cargando />}
+      {!error && mascotas.datos && resumen.datos && (
+        <Contenido mascotas={mascotas.datos} resumen={resumen.datos} />
       )}
     </div>
   );
