@@ -17,6 +17,8 @@ El backend debe estar corriendo en `http://localhost:3000` (ver `docs/autenticac
 |---|---|
 | `app/` | Pantallas. `app/(app)/` son las pantallas privadas (requieren sesión). |
 | `components/` | Componentes reutilizables (íconos: `lucide-react`): `Logo`, `ui.tsx` (Button, Input, Alerta, Cargando), `AppShell` (menú). |
+| `hooks/useApi.ts` | Hook para cargar datos del backend con sus estados (carga, error, datos) y recargarlos. |
+| `hooks/useListaApi.ts` | Hook para listas que la pantalla modifica sin volver a pedirlas (mascotas, horarios). |
 | `lib/api.ts` | Función `api()` para llamar al backend con el token. |
 | `lib/navegacion.ts` | Menú y qué rol puede ver cada ruta. |
 | `lib/types.ts` | Tipos de los datos que devuelve la API. |
@@ -44,24 +46,27 @@ El backend debe estar corriendo en `http://localhost:3000` (ver `docs/autenticac
 
 1. Crear el archivo en `app/(app)/<ruta>/page.tsx` (así queda protegida y con el menú).
 2. Si va en el menú o la ve un solo rol, agregarla en `lib/navegacion.ts`.
-3. Llamar al backend con `api()`; el token se envía solo:
+3. Para **traer datos**, usar el hook `useApi`; el token se envía solo:
 
 ```tsx
 "use client";
-import { useEffect, useState } from "react";
-import { api, ApiError } from "@/lib/api";
+import { Alerta, Cargando } from "@/components/ui";
+import { useApi } from "@/hooks/useApi";
 
 export default function MisMascotasPage() {
-  const [mascotas, setMascotas] = useState<Mascota[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const { datos, cargando, error, recargar } = useApi<Mascota[]>("/pets");
 
-  useEffect(() => {
-    api<Mascota[]>("/pets")
-      .then(setMascotas)
-      .catch((e) => setError(e instanceof ApiError ? e.message : "Error"));
-  }, []);
-  // ...
+  if (cargando) return <Cargando />;
+  if (error) return <Alerta>{error}</Alerta>;
+  if (datos?.length === 0) return <p>Todavía no tienes mascotas.</p>;
+  // ... mostrar datos; después de guardar algo, llamar a recargar()
 }
+```
+
+   Para **enviar datos** (crear, editar, borrar), usar `api()` directamente:
+
+```tsx
+await api("/pets", { method: "POST", body: { name: "Apolo" } });
 ```
 
 4. Para saber quién inició sesión: `const usuario = useSesion((s) => s.usuario);`
@@ -71,5 +76,6 @@ export default function MisMascotasPage() {
 
 - Al iniciar sesión, el token y el usuario se guardan en el store de Zustand (`store/sesion.ts`), que los persiste en `localStorage` para no perder la sesión al recargar.
 - `api()` agrega el header `Authorization: Bearer <token>` en cada petición.
+- Si el backend no responde en 10 segundos, `api()` cancela la petición y muestra "El servidor tardó demasiado en responder".
 - Si el backend responde **401** (token vencido o inválido), la sesión se cierra y `AppShell` manda al login.
 - El frontend solo oculta pantallas según el rol; **la seguridad real está en el backend** (`JwtAuthGuard` y `RolesGuard`).
