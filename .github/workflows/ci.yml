@@ -6,8 +6,20 @@ on:
   pull_request:
     branches: [master]
 
+# Variables solo para la base de datos temporal de CI (no son secretos reales).
+env:
+  POSTGRES_USER: pawlie
+  POSTGRES_PASSWORD: pawlie_ci
+  POSTGRES_DB: pawlie
+  DB_HOST: localhost
+  DB_PORT: 5432
+  JWT_SECRET: ci-solo-para-pruebas
+  JWT_EXPIRES_IN: 1d
+  FRONTEND_URL: http://localhost:3001
+
 jobs:
   backend:
+    name: Backend · lint, unitarias y build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -23,3 +35,102 @@ jobs:
       - run: npx eslint "{src,test}/**/*.ts" --ignore-pattern "src/database/migrations/**"
       - run: npm test
       - run: npm run build
+
+  backend-integracion:
+    name: Backend · pruebas de integración
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:16
+        env:
+          POSTGRES_USER: pawlie
+          POSTGRES_PASSWORD: pawlie_ci
+          POSTGRES_DB: pawlie_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npm run test:e2e
+
+  frontend:
+    name: Frontend · lint y build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npx tsc --noEmit
+      - run: npm run build
+
+  e2e:
+    name: E2E · Playwright (frontend + backend + base de datos)
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    services:
+      db:
+        image: postgres:16
+        env:
+          POSTGRES_USER: pawlie
+          POSTGRES_PASSWORD: pawlie_ci
+          POSTGRES_DB: pawlie
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Backend con datos demo
+        working-directory: backend
+        run: |
+          npm ci
+          npm run migration:run
+          npm run seed
+          npm run build
+          nohup npm run start:prod > ../backend.log 2>&1 &
+          npx wait-on -t 60000 http://localhost:3000
+
+      - name: Frontend (build de producción)
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3000
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          npm run build
+
+      - name: Pruebas E2E
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3000
+        run: npm run test:e2e
+
+      - name: Reporte de Playwright
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            frontend/playwright-report
+            backend.log
+          retention-days: 7

@@ -31,7 +31,9 @@ flowchart LR
 | Frontend | Next.js 16, React 19, Tailwind CSS, Zustand, lucide-react |
 | Backend | NestJS 11, TypeORM, Passport + JWT, bcrypt, class-validator |
 | Base de datos | PostgreSQL 16 (Docker) |
-| Pruebas | Jest y Supertest |
+| Pruebas | Jest y Supertest (backend), Playwright (E2E del frontend) |
+| CI | GitHub Actions: lint, pruebas unitarias, de integración, E2E y build |
+| Despliegue | Vercel (frontend), Render (backend), PostgreSQL administrado |
 
 **Modelo de datos:** `users`, `caregiver_profiles`, `pets`, `services`, `availability`, `requests`, `service_updates`, `reviews`.
 
@@ -60,6 +62,21 @@ npm install
 npm run dev
 ```
 
+### Con Docker (base de datos + API)
+
+```bash
+cp .env.example .env              # llenar los valores
+docker compose up -d --build      # db en :5432 y api en :3000
+
+# Migraciones y datos demo, desde tu máquina contra la base del contenedor
+cd backend
+npm install
+npm run migration:run
+npm run seed                      # opcional
+```
+
+La imagen de la API (`backend/Dockerfile`) es multi-etapa: compila con todas las dependencias y la imagen final solo lleva `dist/` y las dependencias de producción. Ningún secreto entra a la imagen (`.env` está en `.dockerignore`); las variables se pasan con `env_file`. El frontend se corre aparte con `npm run dev` (paso 4).
+
 ## Usuarios demo
 
 Se crean con `npm run seed`. Contraseña de todas las cuentas: **`Pawlie123`**.
@@ -83,6 +100,33 @@ La primera vez hay que crear la base de pruebas:
 ```bash
 docker compose exec db createdb -U <POSTGRES_USER> <POSTGRES_DB>_test
 ```
+
+### Pruebas E2E del frontend (Playwright)
+
+Recorren la app en un navegador real contra el backend y la base de datos. Necesitan el backend corriendo con los datos demo (`npm run seed`).
+
+```bash
+cd frontend
+npx playwright install chromium   # solo la primera vez
+npm run test:e2e                  # levanta el frontend si no está corriendo
+```
+
+| Archivo | Qué comprueba |
+|---|---|
+| `e2e/autenticacion.spec.ts` | Login, credenciales inválidas, cierre de sesión, rutas privadas y que cada rol no pueda abrir pantallas del otro |
+| `e2e/mascotas.spec.ts` | La dueña registra, edita y elimina una mascota, y los datos persisten al recargar |
+| `e2e/disponibilidad.spec.ts` | La cuidadora agrega y elimina horarios, y el backend rechaza horarios que se cruzan |
+
+### Integración continua
+
+`.github/workflows/ci.yml` corre en cada pull request y push a `master`:
+
+| Job | Qué hace |
+|---|---|
+| Backend · lint, unitarias y build | ESLint, Jest y `nest build` |
+| Backend · pruebas de integración | `npm run test:e2e` contra un PostgreSQL temporal |
+| Frontend · lint y build | ESLint, TypeScript y `next build` |
+| E2E · Playwright | Levanta backend (con migraciones y datos demo) y frontend en modo producción, y corre Playwright |
 
 ## Colección de Postman
 
@@ -119,6 +163,8 @@ docker compose exec db createdb -U <POSTGRES_USER> <POSTGRES_DB>_test
 
 ## Declaración de uso de IA
 
+El registro detallado con el formato del curso está en [AI_USAGE.md](AI_USAGE.md).
+
 ### Cristina Jauregui
 
 En mi parte del proyecto (autenticación, seguimiento del servicio, reseñas y frontend base) trabajé paso a paso con Claude (Anthropic) como asistente de programación.
@@ -139,4 +185,4 @@ _Pendiente._
 
 ### Ospina
 
-_Pendiente._
+Usé Claude Code (Anthropic) como asistente para terminar la entrega final: las pantallas Mis mascotas y Mi disponibilidad, las pruebas E2E con Playwright, el CI del frontend y la documentación. Cada uso está registrado en [AI_USAGE.md](AI_USAGE.md), con lo que se conservó, lo que se cambió y cómo se verificó.
