@@ -143,7 +143,9 @@ npm run test:e2e                  # levanta el frontend si no está corriendo
 ## Despliegue
 
 - Backend: https://pawlie.onrender.com
-- Frontend: _pendiente (URL)_
+- Frontend: https://pawlie-rose.vercel.app (Vercel, carpeta `frontend`, configurado con `frontend/vercel.json`)
+
+Variables en Vercel: `NEXT_PUBLIC_API_URL=https://pawlie.onrender.com`. En Render, `FRONTEND_URL` debe incluir la URL de Vercel para que CORS permita las peticiones.
 
 ## Responsables
 
