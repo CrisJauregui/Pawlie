@@ -98,7 +98,7 @@ docker compose exec db createdb -U <POSTGRES_USER> <POSTGRES_DB>_test
 
 ## Despliegue
 
-- Backend: _pendiente (URL)_
+- Backend: https://pawlie.onrender.com
 - Frontend: _pendiente (URL)_
 
 ## Responsables
