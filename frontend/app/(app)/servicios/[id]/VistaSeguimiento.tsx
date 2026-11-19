@@ -110,6 +110,12 @@ export function VistaSeguimiento({ datos }: { datos: Seguimiento }) {
 
           <Tarjeta>
             <h2 className="text-lg font-extrabold">Estado del servicio</h2>
+            {datos.updates.length === 0 && (
+              <p className="mt-2 text-sm text-tinta-suave">
+                El cuidador todavía no ha publicado actualizaciones. Esta
+                pantalla se actualiza sola.
+              </p>
+            )}
             <ol className="mt-5 flex flex-col">
               <Paso
                 hecho
