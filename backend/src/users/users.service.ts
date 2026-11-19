@@ -12,6 +12,7 @@ export interface CreateUserData {
   phone?: string;
 }
 
+// Acceso a la tabla users. Lo usa AuthService para registrar e iniciar sesión.
 @Injectable()
 export class UsersService {
   constructor(
@@ -23,6 +24,7 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { id } });
   }
 
+  // Por defecto la columna del hash NO se trae (select: false en la entidad).
   findByEmail(email: string): Promise<User | null> {
     return this.usersRepository.findOne({ where: { email } });
   }
