@@ -138,6 +138,8 @@ npm run test:e2e                  # levanta el frontend si no está corriendo
 |---|---|
 | [docs/autenticacion.md](docs/autenticacion.md) | Registro, login, JWT, roles y cómo proteger endpoints |
 | [docs/seguimiento.md](docs/seguimiento.md) | Seguimiento del servicio, reseñas y datos demo |
+| [docs/casos-de-prueba-seguimiento.md](docs/casos-de-prueba-seguimiento.md) | Casos de prueba manuales de autenticación, seguimiento y reseñas |
+| [docs/registro-de-decisiones.md](docs/registro-de-decisiones.md) | Problemas encontrados y decisiones tomadas |
 | [frontend/README.md](frontend/README.md) | Estructura del frontend, rutas y cómo crear pantallas |
 
 ## Despliegue
