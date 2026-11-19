@@ -8,73 +8,21 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Alerta, Button, Cargando, Frase, Input } from "@/components/ui";
+import { useListaApi } from "@/hooks/useListaApi";
 import { api, ApiError } from "@/lib/api";
 import { formatoFechaCorta, formatoHora, formatoPesos } from "@/lib/formato";
-import { EstadoBadge } from "@/lib/solicitudes";
-import type { EstadoSolicitud, ResumenSolicitud } from "@/lib/types";
+import { ESTADOS_ACTIVOS, EstadoBadge } from "@/lib/solicitudes";
+import type { EstadoSolicitud, Solicitud } from "@/lib/types";
 import { useSesion } from "@/store/sesion";
 
-type Solicitud = Omit<ResumenSolicitud, "caregiver"> & {
-  owner: { id: string; name: string };
-};
-
 type Accion = "start" | "complete";
-
-const DATOS_TEMPORALES = true;
-
-const DEMO: Solicitud[] = [
-  {
-    id: "demo-1",
-    status: "PENDIENTE",
-    startAt: "2026-10-28T09:00:00-05:00",
-    endAt: "2026-10-28T10:00:00-05:00",
-    totalPrice: 20000,
-    service: { name: "Paseo 1h", type: "PASEO", durationMinutes: 60 },
-    pet: { id: "p1", name: "Luna", species: "Gato", breed: "Siamés" },
-    owner: { id: "o1", name: "Laura Pérez" },
-  },
-  {
-    id: "demo-2",
-    status: "ACEPTADA",
-    startAt: "2026-10-27T15:00:00-05:00",
-    endAt: "2026-10-27T16:00:00-05:00",
-    totalPrice: 20000,
-    service: { name: "Paseo 1h", type: "PASEO", durationMinutes: 60 },
-    pet: { id: "p2", name: "Rocky", species: "Perro", breed: "Labrador" },
-    owner: { id: "o2", name: "Andrés Gómez" },
-  },
-  {
-    id: "demo-3",
-    status: "EN_CURSO",
-    startAt: "2026-10-26T08:00:00-05:00",
-    endAt: "2026-10-26T09:00:00-05:00",
-    totalPrice: 35000,
-    service: { name: "Baño y cepillado", type: "BANO", durationMinutes: 90 },
-    pet: { id: "p3", name: "Apolo", species: "Perro", breed: null },
-    owner: { id: "o3", name: "María Torres" },
-  },
-  {
-    id: "demo-4",
-    status: "FINALIZADA",
-    startAt: "2026-10-24T10:00:00-05:00",
-    endAt: "2026-10-24T11:00:00-05:00",
-    totalPrice: 20000,
-    service: { name: "Paseo 1h", type: "PASEO", durationMinutes: 60 },
-    pet: { id: "p4", name: "Mía", species: "Perro", breed: "Beagle" },
-    owner: { id: "o4", name: "Carlos Ruiz" },
-  },
-];
 
 const SIGUIENTE_ESTADO: Record<Accion, EstadoSolicitud> = {
   start: "EN_CURSO",
   complete: "FINALIZADA",
 };
-
-function cargarSolicitudes(): Promise<Solicitud[]> {
-  return Promise.resolve(DEMO);
-}
 
 function mensajeError(err: unknown): string {
   return err instanceof ApiError
@@ -84,23 +32,33 @@ function mensajeError(err: unknown): string {
 
 export default function DashboardCuidadorPage() {
   const usuario = useSesion((s) => s.usuario);
-  const [solicitudes, setSolicitudes] = useState<Solicitud[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    cargarSolicitudes().then(setSolicitudes);
-  }, []);
+  // GET /requests/me: el backend devuelve solo las solicitudes del cuidador
+  // dueño del token (el filtro se hace en el servidor, no en el navegador).
+  const {
+    datos: solicitudes,
+    setDatos: setSolicitudes,
+    error,
+    setError,
+  } = useListaApi<Solicitud>(
+    "/requests/me",
+    "No se pudieron cargar tus solicitudes",
+  );
+  const [exito, setExito] = useState<string | null>(null);
 
   async function cambiar(id: string, accion: Accion) {
     setError(null);
+    setExito(null);
     try {
-      if (!DATOS_TEMPORALES) {
-        await api(`/requests/${id}/${accion}`, { method: "PATCH" });
-      }
+      await api(`/requests/${id}/${accion}`, { method: "PATCH" });
       setSolicitudes((lista) =>
         (lista ?? []).map((s) =>
           s.id === id ? { ...s, status: SIGUIENTE_ESTADO[accion] } : s,
         ),
+      );
+      setExito(
+        accion === "start"
+          ? "Servicio iniciado. El dueño ya puede ver el seguimiento."
+          : "Servicio finalizado. ¡Buen trabajo!",
       );
     } catch (err) {
       setError(mensajeError(err));
@@ -109,13 +67,12 @@ export default function DashboardCuidadorPage() {
 
   async function publicar(id: string, message: string): Promise<boolean> {
     setError(null);
+    setExito(null);
     try {
-      if (!DATOS_TEMPORALES) {
-        await api(`/requests/${id}/updates`, {
-          method: "POST",
-          body: { message },
-        });
-      }
+      await api(`/requests/${id}/updates`, {
+        method: "POST",
+        body: { message },
+      });
       return true;
     } catch (err) {
       setError(mensajeError(err));
@@ -140,9 +97,16 @@ export default function DashboardCuidadorPage() {
       </section>
 
       {error && <Alerta>{error}</Alerta>}
-      {solicitudes === null ? (
-        <Cargando />
-      ) : (
+      {exito && (
+        <p
+          role="status"
+          className="rounded-2xl bg-verde-claro px-4 py-3 text-sm font-semibold text-verde"
+        >
+          {exito}
+        </p>
+      )}
+      {solicitudes === null && !error && <Cargando />}
+      {solicitudes !== null && (
         <Contenido
           solicitudes={solicitudes}
           onCambiar={cambiar}
@@ -164,9 +128,10 @@ function Contenido({
 }) {
   const cuenta = (...estados: EstadoSolicitud[]) =>
     solicitudes.filter((s) => estados.includes(s.status)).length;
-  const ordenadas = [...solicitudes].sort((a, b) =>
-    a.startAt.localeCompare(b.startAt),
-  );
+  // En el tablero van solo las activas; el historial está en /solicitudes.
+  const ordenadas = solicitudes
+    .filter((s) => ESTADOS_ACTIVOS.includes(s.status))
+    .sort((a, b) => a.startAt.localeCompare(b.startAt));
 
   return (
     <>
@@ -195,20 +160,23 @@ function Contenido({
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="flex items-center gap-2 text-2xl font-extrabold">
-          <PawPrint size={20} className="fill-current text-naranja" />
-          Mis solicitudes
-        </h2>
-        {DATOS_TEMPORALES && (
-          <p className="text-xs text-tinta-suave">
-            Datos de demostración: el listado se conectará a la API del cuidador.
-          </p>
-        )}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="flex items-center gap-2 text-2xl font-extrabold">
+            <PawPrint size={20} className="fill-current text-naranja" />
+            Mis solicitudes activas
+          </h2>
+          <Link
+            href="/solicitudes"
+            className="text-sm font-bold text-naranja hover:text-naranja-oscuro"
+          >
+            Ver historial
+          </Link>
+        </div>
 
         {ordenadas.length === 0 ? (
           <div className="flex flex-col items-center gap-3 rounded-3xl border-2 border-dashed border-crema-oscuro p-10 text-center text-tinta-suave">
             <PawPrint size={32} className="text-icono" />
-            Todavía no tienes solicitudes.
+            No tienes solicitudes activas por ahora.
           </div>
         ) : (
           <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
