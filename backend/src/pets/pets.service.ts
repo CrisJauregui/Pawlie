@@ -9,6 +9,8 @@ import { CreatePetDto } from './dto/create-pet.dto';
 import { UpdatePetDto } from './dto/update-pet.dto';
 import { Pet } from './pet.entity';
 
+// Reglas de las mascotas. Todas las consultas filtran por el id del dueño
+// que viene del token, así nadie ve ni toca mascotas ajenas.
 @Injectable()
 export class PetsService {
   constructor(
@@ -28,6 +30,7 @@ export class PetsService {
     return this.petsRepository.save(pet);
   }
 
+  // Las más recientes primero.
   findAll(ownerId: string): Promise<Pet[]> {
     return this.petsRepository.find({
       where: { owner: { id: ownerId } },
@@ -35,6 +38,7 @@ export class PetsService {
     });
   }
 
+  // Busca por id Y por dueño: si es de otro, no aparece y responde 404.
   async findOne(ownerId: string, id: string): Promise<Pet> {
     const pet = await this.petsRepository.findOneBy({
       id,
@@ -52,6 +56,8 @@ export class PetsService {
     return this.petsRepository.save(pet);
   }
 
+  // No se puede borrar una mascota con solicitudes: la base de datos lo
+  // impide (código 23503) y lo convertimos en un 409 claro.
   async remove(ownerId: string, id: string): Promise<void> {
     const pet = await this.findOne(ownerId, id);
     try {
