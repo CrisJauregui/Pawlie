@@ -22,12 +22,14 @@ import { UpdateServiceDto } from './dto/update-service.dto';
 import { Service } from './service.entity';
 import { ServicesService } from './services.service';
 
+// Servicios que ofrece el cuidador (pantalla Mis servicios). Solo cuidadores.
 @Controller('services')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.CAREGIVER)
 export class ServicesController {
   constructor(private readonly servicesService: ServicesService) {}
 
+  // POST /services: crea un servicio con nombre, tipo, precio y duración.
   @Post()
   create(
     @CurrentUser() user: AuthUser,
@@ -36,6 +38,7 @@ export class ServicesController {
     return this.servicesService.create(user.id, dto);
   }
 
+  // GET /services: los servicios del cuidador que inició sesión.
   @Get()
   findAll(@CurrentUser() user: AuthUser): Promise<Service[]> {
     return this.servicesService.findAll(user.id);
@@ -49,6 +52,7 @@ export class ServicesController {
     return this.servicesService.findOne(user.id, id);
   }
 
+  // PATCH /services/:id: cambia precio, duración o lo activa/desactiva.
   @Patch(':id')
   update(
     @CurrentUser() user: AuthUser,
@@ -58,6 +62,7 @@ export class ServicesController {
     return this.servicesService.update(user.id, id, dto);
   }
 
+  // DELETE /services/:id: borra un servicio propio.
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(

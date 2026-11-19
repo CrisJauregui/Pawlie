@@ -24,6 +24,7 @@ import { RequestsService, RequestView, StatusChange } from './requests.service';
 export class RequestsController {
   constructor(private readonly requestsService: RequestsService) {}
 
+  // POST /requests: la dueña reserva (paso 5 del asistente).
   @Post()
   @Roles(UserRole.OWNER)
   create(
@@ -50,6 +51,7 @@ export class RequestsController {
     return this.requestsService.findOne(user.id, user.role, id);
   }
 
+  // Solo el cuidador: PENDIENTE → ACEPTADA.
   @Patch(':id/accept')
   @Roles(UserRole.CAREGIVER)
   accept(
@@ -59,6 +61,7 @@ export class RequestsController {
     return this.requestsService.accept(user.id, id);
   }
 
+  // Solo el cuidador: PENDIENTE → RECHAZADA.
   @Patch(':id/reject')
   @Roles(UserRole.CAREGIVER)
   reject(
@@ -68,6 +71,7 @@ export class RequestsController {
     return this.requestsService.reject(user.id, id);
   }
 
+  // Solo la dueña: PENDIENTE o ACEPTADA → CANCELADA.
   @Patch(':id/cancel')
   @Roles(UserRole.OWNER)
   cancel(
