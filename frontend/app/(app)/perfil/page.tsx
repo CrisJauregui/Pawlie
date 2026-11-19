@@ -28,6 +28,8 @@ export default function PerfilPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Primero trae los datos del usuario del token; si es dueño, también su
+    // resumen (mascotas y servicios) para las tarjetas de números.
     api<Usuario>("/auth/me")
       .then((usuario) => {
         setPerfil(usuario);

@@ -46,6 +46,8 @@ export default function SeleccionarRolPage() {
     if (!datos && !enviando) router.replace("/registro");
   }, [datos, enviando, router]);
 
+  // Último paso del registro: envía los datos del paso anterior más el rol
+  // a POST /auth/register y deja la sesión iniciada.
   async function crearCuenta() {
     if (!datos || !rol) return;
     setError(null);

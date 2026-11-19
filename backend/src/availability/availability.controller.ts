@@ -22,12 +22,15 @@ import { AvailabilityService } from './availability.service';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 
+// Horarios del cuidador (pantalla Calendario). Solo para cuidadores:
+// un dueño recibe 403.
 @Controller('availability')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.CAREGIVER)
 export class AvailabilityController {
   constructor(private readonly availabilityService: AvailabilityService) {}
 
+  // POST /availability: agrega un horario (día, hora de inicio y de fin).
   @Post()
   create(
     @CurrentUser() user: AuthUser,
@@ -36,11 +39,13 @@ export class AvailabilityController {
     return this.availabilityService.create(user.id, dto);
   }
 
+  // GET /availability: los horarios del cuidador que inició sesión.
   @Get()
   findAll(@CurrentUser() user: AuthUser): Promise<Availability[]> {
     return this.availabilityService.findAll(user.id);
   }
 
+  // PATCH /availability/:id: cambia un horario propio.
   @Patch(':id')
   update(
     @CurrentUser() user: AuthUser,
@@ -50,6 +55,7 @@ export class AvailabilityController {
     return this.availabilityService.update(user.id, id, dto);
   }
 
+  // DELETE /availability/:id: borra un horario propio (204).
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(

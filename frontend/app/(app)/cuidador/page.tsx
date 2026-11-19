@@ -45,6 +45,7 @@ export default function DashboardCuidadorPage() {
   );
   const [exito, setExito] = useState<string | null>(null);
 
+  // Iniciar o finalizar un servicio: PATCH /requests/:id/start o /complete.
   async function cambiar(id: string, accion: Accion) {
     setError(null);
     setExito(null);
@@ -65,6 +66,8 @@ export default function DashboardCuidadorPage() {
     }
   }
 
+  // Publica un avance (POST /requests/:id/updates) que la dueña ve en su
+  // seguimiento la próxima vez que se refresque (máximo 15 segundos).
   async function publicar(id: string, message: string): Promise<boolean> {
     setError(null);
     setExito(null);

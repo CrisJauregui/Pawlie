@@ -1,5 +1,7 @@
 import type { EstadoSolicitud } from "./types";
 
+// Texto y color de cada estado de una solicitud, para mostrarlo igual en
+// todas las pantallas (EstadoBadge).
 export const ESTADOS: Record<
   EstadoSolicitud,
   { texto: string; clases: string }
@@ -15,6 +17,8 @@ export const ESTADOS: Record<
   CANCELADA: { texto: "Cancelada", clases: "bg-crema-oscuro text-tinta-suave" },
 };
 
+// Estados en los que el servicio sigue "vivo": se usan para filtrar listas
+// y para saber cuándo el seguimiento se refresca solo.
 export const ESTADOS_ACTIVOS: EstadoSolicitud[] = [
   "PENDIENTE",
   "ACEPTADA",

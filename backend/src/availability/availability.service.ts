@@ -11,6 +11,8 @@ import { Availability } from './availability.entity';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 
+// Reglas de la disponibilidad: el inicio debe ser antes del fin y los
+// horarios de un mismo día no pueden cruzarse.
 @Injectable()
 export class AvailabilityService {
   constructor(
@@ -69,6 +71,7 @@ export class AvailabilityService {
     await this.availabilityRepository.remove(slot);
   }
 
+  // Los horarios cuelgan del perfil de cuidador, no del usuario.
   private async getProfile(userId: string): Promise<CaregiverProfile> {
     const profile = await this.profilesRepository.findOneBy({
       user: { id: userId },
@@ -79,6 +82,7 @@ export class AvailabilityService {
     return profile;
   }
 
+  // Solo encuentra horarios de ESTE cuidador; si es de otro, 404.
   private async findOwn(profileId: string, id: string): Promise<Availability> {
     const slot = await this.availabilityRepository.findOneBy({
       id,
@@ -95,6 +99,8 @@ export class AvailabilityService {
     return time.slice(0, 5);
   }
 
+  // Dos franjas se cruzan si una empieza antes de que termine la otra.
+  // Que una termine justo cuando empieza la otra sí se permite (contiguas).
   private async assertNoOverlap(
     profileId: string,
     dayOfWeek: number,

@@ -21,6 +21,7 @@ import { FindCaregiversQueryDto } from './dto/find-caregivers-query.dto';
 export class CaregiversController {
   constructor(private readonly caregiversService: CaregiversService) {}
 
+  // GET /caregivers?city=&type=&date=: búsqueda con filtros (pantalla Buscar).
   @Get()
   findAll(
     @Query() query: FindCaregiversQueryDto,
@@ -28,6 +29,7 @@ export class CaregiversController {
     return this.caregiversService.findAll(query);
   }
 
+  // GET /caregivers/:id: perfil con servicios activos y horarios.
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string): Promise<CaregiverDetail> {
     return this.caregiversService.findOne(id);

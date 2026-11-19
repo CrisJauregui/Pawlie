@@ -81,6 +81,7 @@ export function Input({
   );
 }
 
+// Muestra los errores, casi siempre el mensaje que manda el backend.
 export function Alerta({ children }: { children: React.ReactNode }) {
   return (
     <p
@@ -92,6 +93,7 @@ export function Alerta({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Estado de carga: se muestra mientras llega la respuesta de la API.
 export function Cargando() {
   return (
     <div className="flex flex-1 items-center justify-center p-10 text-tinta-suave">

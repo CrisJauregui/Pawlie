@@ -22,12 +22,15 @@ import { UpdatePetDto } from './dto/update-pet.dto';
 import { Pet } from './pet.entity';
 import { PetsService } from './pets.service';
 
+// Endpoints de mascotas. Toda la clase exige token (JwtAuthGuard) y rol
+// de dueño (RolesGuard + @Roles(OWNER)); un cuidador recibe 403.
 @Controller('pets')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.OWNER)
 export class PetsController {
   constructor(private readonly petsService: PetsService) {}
 
+  // POST /pets: registra una mascota del dueño que inició sesión.
   @Post()
   create(
     @CurrentUser() user: AuthUser,
@@ -36,11 +39,13 @@ export class PetsController {
     return this.petsService.create(user.id, dto);
   }
 
+  // GET /pets: solo las mascotas del dueño.
   @Get()
   findAll(@CurrentUser() user: AuthUser): Promise<Pet[]> {
     return this.petsService.findAll(user.id);
   }
 
+  // GET /pets/:id: si la mascota es de otro dueño responde 404.
   @Get(':id')
   findOne(
     @CurrentUser() user: AuthUser,
@@ -49,6 +54,7 @@ export class PetsController {
     return this.petsService.findOne(user.id, id);
   }
 
+  // PATCH /pets/:id: edita solo los campos enviados.
   @Patch(':id')
   update(
     @CurrentUser() user: AuthUser,
@@ -58,6 +64,7 @@ export class PetsController {
     return this.petsService.update(user.id, id, dto);
   }
 
+  // DELETE /pets/:id: 204 sin contenido; 409 si tiene solicitudes.
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(

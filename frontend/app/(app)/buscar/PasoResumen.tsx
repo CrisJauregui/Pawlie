@@ -45,6 +45,9 @@ export function PasoResumen({
     new Date(inicio).getTime() + servicio.durationMinutes * 60 * 1000,
   );
 
+  // Crea la reserva con POST /requests. El backend vuelve a validar todo
+  // (mascota propia, horario, choques); si hay choque responde 409 y se
+  // ofrece elegir otra hora.
   async function enviar() {
     setEnviando(true);
     setError(null);

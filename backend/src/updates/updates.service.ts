@@ -10,6 +10,8 @@ import { Request as ServiceRequest } from '../requests/request.entity';
 import { CreateServiceUpdateDto } from './dto/create-service-update.dto';
 import { ServiceUpdate } from './service-update.entity';
 
+// Ciclo del servicio desde el lado del cuidador. Cada acción revisa que la
+// solicitud sea suya y que esté en el estado correcto; si no, 404 o 409.
 @Injectable()
 export class UpdatesService {
   constructor(
@@ -56,6 +58,7 @@ export class UpdatesService {
     return this.updatesRepository.save(update);
   }
 
+  // Solo encuentra solicitudes asignadas a este cuidador.
   private async findOwnRequest(
     userId: string,
     requestId: string,
@@ -69,6 +72,7 @@ export class UpdatesService {
     return request;
   }
 
+  // Cambia de estado solo si la solicitud está en el estado esperado.
   private async transition(
     userId: string,
     requestId: string,
