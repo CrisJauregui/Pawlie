@@ -2,9 +2,9 @@
 
 import { CalendarDays, Clock, Wallet } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Alerta, Cargando, TituloPagina } from "@/components/ui";
-import { api, ApiError } from "@/lib/api";
+import { useApi } from "@/hooks/useApi";
 import { formatoFechaCorta, formatoHora, formatoPesos } from "@/lib/formato";
 import { FotoMascota } from "@/components/FotoMascota";
 import { ESTADOS_ACTIVOS, EstadoBadge } from "@/lib/solicitudes";
@@ -20,23 +20,12 @@ type Filtro = (typeof FILTROS)[number]["id"];
 
 // Mis servicios: entrada al estado, seguimiento y resumen final de cada solicitud.
 export default function ServiciosPage() {
-  const [solicitudes, setSolicitudes] = useState<ResumenSolicitud[] | null>(
-    null,
+  const { datos, cargando, error } = useApi<ResumenDueno>(
+    "/owner/summary",
+    "No se pudieron cargar tus servicios",
   );
-  const [error, setError] = useState<string | null>(null);
+  const solicitudes: ResumenSolicitud[] | null = datos?.requests ?? null;
   const [filtro, setFiltro] = useState<Filtro>("activos");
-
-  useEffect(() => {
-    api<ResumenDueno>("/owner/summary")
-      .then((r) => setSolicitudes(r.requests))
-      .catch((err: unknown) =>
-        setError(
-          err instanceof ApiError
-            ? err.message
-            : "No se pudieron cargar tus servicios",
-        ),
-      );
-  }, []);
 
   const visibles = (solicitudes ?? []).filter((s) =>
     filtro === "todos"
@@ -70,7 +59,7 @@ export default function ServiciosPage() {
       </div>
 
       {error && <Alerta>{error}</Alerta>}
-      {!solicitudes && !error && <Cargando />}
+      {cargando && <Cargando />}
       {solicitudes && visibles.length === 0 && (
         <p className="rounded-3xl border-2 border-dashed border-crema-oscuro p-10 text-center text-tinta-suave">
           No tienes servicios en esta sección.{" "}

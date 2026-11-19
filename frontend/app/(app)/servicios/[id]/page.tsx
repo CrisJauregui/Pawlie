@@ -3,9 +3,9 @@
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Alerta, Cargando } from "@/components/ui";
-import { api, ApiError } from "@/lib/api";
+import { useApi } from "@/hooks/useApi";
 import { ESTADOS_ACTIVOS } from "@/lib/solicitudes";
 import type { Seguimiento } from "@/lib/types";
 import { VistaEstado } from "./VistaEstado";
@@ -21,37 +21,18 @@ const INTERVALO_MS = 15_000;
 //   FINALIZADA                                    → resumen y reseña (pantalla 8)
 export default function DetalleServicioPage() {
   const { id } = useParams<{ id: string }>();
-  const [datos, setDatos] = useState<Seguimiento | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const cargar = useCallback(
-    () =>
-      api<Seguimiento>(`/requests/${id}/tracking`)
-        .then((d) => {
-          setDatos(d);
-          setError(null);
-        })
-        .catch((err: unknown) =>
-          setError(
-            err instanceof ApiError
-              ? err.message
-              : "No se pudo cargar el servicio",
-          ),
-        ),
-    [id],
+  const { datos, cargando, error, recargar } = useApi<Seguimiento>(
+    `/requests/${id}/tracking`,
+    "No se pudo cargar el servicio",
   );
-
-  useEffect(() => {
-    void cargar();
-  }, [cargar]);
 
   // Mientras el servicio esté activo, se refresca solo para ver los cambios del cuidador.
   const activo = datos !== null && ESTADOS_ACTIVOS.includes(datos.status);
   useEffect(() => {
     if (!activo) return;
-    const timer = setInterval(() => void cargar(), INTERVALO_MS);
+    const timer = setInterval(() => void recargar(), INTERVALO_MS);
     return () => clearInterval(timer);
-  }, [activo, cargar]);
+  }, [activo, recargar]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -63,10 +44,10 @@ export default function DetalleServicioPage() {
       </Link>
 
       {error && <Alerta>{error}</Alerta>}
-      {!datos && !error && <Cargando />}
+      {cargando && <Cargando />}
       {datos?.status === "EN_CURSO" && <VistaSeguimiento datos={datos} />}
       {datos?.status === "FINALIZADA" && (
-        <VistaFinalizado datos={datos} alCalificar={cargar} />
+        <VistaFinalizado datos={datos} alCalificar={recargar} />
       )}
       {datos &&
         datos.status !== "EN_CURSO" &&

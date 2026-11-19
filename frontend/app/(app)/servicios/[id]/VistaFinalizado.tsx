@@ -129,6 +129,9 @@ function Estrellas({ valor }: { valor: number }) {
 function ResenaEnviada({ resena }: { resena: Resena }) {
   return (
     <Tarjeta className="flex flex-col items-center gap-3 text-center">
+      <p className="flex items-center gap-2 text-sm font-bold text-verde">
+        <CircleCheck size={18} /> Tu reseña quedó guardada
+      </p>
       <h2 className="font-extrabold">Tu calificación</h2>
       <Estrellas valor={resena.rating} />
       {resena.comment && (
