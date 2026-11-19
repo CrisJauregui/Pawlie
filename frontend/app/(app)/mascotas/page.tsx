@@ -63,6 +63,9 @@ export default function MascotasPage() {
     setExito(null);
   }
 
+  // Valida lo básico antes de enviar y luego crea (POST /pets) o edita
+  // (PATCH /pets/:id). La lista se actualiza en pantalla con setMascotas,
+  // sin volver a pedirla, y se muestra un mensaje de éxito.
   async function guardar(e: React.FormEvent) {
     e.preventDefault();
     const edad = form.age.trim() === "" ? undefined : Number(form.age);

@@ -34,6 +34,8 @@ export default function DisponibilidadPage() {
   const [fin, setFin] = useState("12:00");
   const [guardando, setGuardando] = useState(false);
 
+  // Agrega un horario con POST /availability. Si se cruza con otro del
+  // mismo día, el backend responde 409 y mostramos su mensaje.
   async function agregar(e: React.FormEvent) {
     e.preventDefault();
     if (inicio >= fin) {
