@@ -18,6 +18,10 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
+  // Envía correo y contraseña a POST /auth/login. Si son correctos, guarda
+  // el token y el usuario en la sesión (Zustand) y manda a su inicio según
+  // el rol. Si no, muestra el mensaje del backend ("Correo o contraseña
+  // incorrectos").
   async function enviar(e: FormEvent) {
     e.preventDefault();
     setError(null);
