@@ -190,7 +190,7 @@ export default function MisServiciosPage() {
             id="precio"
             label="Precio (COP)"
             type="number"
-            min={1}
+            min={1000}
             step={1000}
             value={form.price}
             onChange={(e) => setForm({ ...form, price: e.target.value })}
