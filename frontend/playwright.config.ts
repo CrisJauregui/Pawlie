@@ -20,7 +20,8 @@ export default defineConfig({
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
-        command: process.env.CI ? "npm run start" : "npm run dev",
+        // En CI el backend ya ocupa el 3000; el frontend va en el 3001 como en dev.
+        command: process.env.CI ? "npm run start -- -p 3001" : "npm run dev",
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
