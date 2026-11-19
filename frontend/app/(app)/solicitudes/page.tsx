@@ -35,6 +35,8 @@ export default function SolicitudesPage() {
   const [filtro, setFiltro] = useState<Filtro>("pendientes");
 
   useEffect(() => {
+    // GET /requests/me devuelve las solicitudes de este usuario: las que envió
+    // (dueño) o las que recibió (cuidador). El filtro lo hace el backend.
     api<Solicitud[]>("/requests/me")
       .then(setSolicitudes)
       .catch((err: unknown) =>

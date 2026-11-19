@@ -61,6 +61,8 @@ export default function MisServiciosPage() {
     setError(null);
   }
 
+  // Crea (POST /services) o edita (PATCH /services/:id) un servicio y
+  // actualiza la lista sin volver a pedirla.
   async function guardar(e: React.FormEvent) {
     e.preventDefault();
     const precio = Number(form.price);
